@@ -1,73 +1,60 @@
 #include <iostream>
 
-void show(int* back, unsigned int n)
-{
-	if (back[n] < 0)
-	{
-		std::cout << n + 1 << " ";
-		return;
-	}
-
-	show(back, back[n]);
-	std::cout << n + 1 << " ";
-}
-
 int main(void)
 {
-	unsigned int n;
-	unsigned int* data, * d;
-	int* back;
+	unsigned int n, * data, * dp, max_ind, max_dp;
+	unsigned int* back;
 
 	std::cin >> n;
 
 	data = new unsigned int[n];
-	d = new unsigned int[n];
-	back = new int[n];
+	dp = new unsigned int[n];
+	back = new unsigned int[n];
 
 	for (unsigned int i = 0; i < n; i++)
 		std::cin >> data[i];
 
-	d[0] = 1;
-	back[0] = -1;
+	dp[n - 1] = 1;
+	back[n - 1] = -1;
+	max_ind = n - 1;
+	max_dp = 1;
 
-	for (unsigned int i = 1; i < n; i++)
+	for (unsigned int i = n - 2; i != -1; i--)
 	{
-		int j;
+		unsigned int ind;
 
-		for (j = i - 1; j >= 0; j--)
+		for (ind = i + 1; ind < n; ind++)
 		{
-			if (data[i] == data[j] + 1)
-			{
-				d[i] = d[j] + 1;
-				back[i] = j;
+			if (data[i] == data[ind] - 1)
 				break;
-			}
 		}
 
-		if (j < 0)
+		if (ind == n)
 		{
-			d[i] = 1;
+			dp[i] = 1;
 			back[i] = -1;
 		}
-	}
 
-	unsigned int max_ind = n - 1;
-	unsigned int max_val = d[n - 1];
+		else
+		{
+			dp[i] = dp[ind] + 1;
+			back[i] = ind;
+		}
 
-	for (int i = n - 2; i >= 0; i--)
-	{
-		if (d[i] > max_val)
+		if (dp[i] > max_dp)
 		{
 			max_ind = i;
-			max_val = d[i];
+			max_dp = dp[i];
 		}
 	}
 
-	std::cout << max_val << std::endl;
-	show(back, max_ind);
+	std::cout << max_dp << std::endl;
+
+	for (unsigned int ind = max_ind; ind < n; ind = back[ind])
+		std::cout << ind + 1 << " ";
 
 	delete[] data;
-	delete[] d;
+	delete[] dp;
 	delete[] back;
 
 	return 0;
