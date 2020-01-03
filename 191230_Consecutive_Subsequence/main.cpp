@@ -1,61 +1,56 @@
 #include <iostream>
+#include <map>
 
 int main(void)
 {
-	unsigned int n, * data, * dp, max_ind, max_dp;
-	unsigned int* back;
+	unsigned int  n, * data, * dp, * cnt;
+	std::map<unsigned int, unsigned int> tree;
+	unsigned int max_ind, max_cnt;
 
 	std::cin >> n;
 
 	data = new unsigned int[n];
 	dp = new unsigned int[n];
-	back = new unsigned int[n];
+	cnt = new unsigned int[n];
 
 	for (unsigned int i = 0; i < n; i++)
-		std::cin >> data[i];
-
-	dp[n - 1] = 1;
-	back[n - 1] = -1;
-	max_ind = n - 1;
-	max_dp = 1;
-
-	for (unsigned int i = n - 2; i != -1; i--)
 	{
-		unsigned int ind;
+		std::cin >> data[i];
+		cnt[i] = 0;
+	}
 
-		for (ind = i + 1; ind < n; ind++)
+	max_ind = -1;
+	max_cnt = 0;
+
+	for (unsigned int i = n - 1; i != -1; i--)
+	{
+		if (tree.count(data[i] + 1))
 		{
-			if (data[i] == data[ind] - 1)
-				break;
+			dp[i] = tree[data[i] + 1];
+			cnt[i] = cnt[dp[i]] + 1;
 		}
-
-		if (ind == n)
-		{
-			dp[i] = 1;
-			back[i] = -1;
-		}
-
 		else
 		{
-			dp[i] = dp[ind] + 1;
-			back[i] = ind;
+			dp[i] = -1;
+			cnt[i] = 1;
 		}
 
-		if (dp[i] > max_dp)
+		tree[data[i]] = i;
+
+		if (cnt[i] > max_cnt)
 		{
 			max_ind = i;
-			max_dp = dp[i];
+			max_cnt = cnt[i];
 		}
 	}
 
-	std::cout << max_dp << std::endl;
-
-	for (unsigned int ind = max_ind; ind < n; ind = back[ind])
-		std::cout << ind + 1 << " ";
+	std::cout << max_cnt << std::endl;
+	for (unsigned int i = max_ind; i != -1; i = dp[i])
+		std::cout << i + 1 << " ";
 
 	delete[] data;
 	delete[] dp;
-	delete[] back;
+	delete[] cnt;
 
 	return 0;
 }
